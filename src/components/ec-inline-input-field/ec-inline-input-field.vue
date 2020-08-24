@@ -4,11 +4,13 @@
       v-if="!isEditing"
       class="ec-inline-input-field__label"
     >{{ label }}</div>
+
     <template v-if="isEditable">
       <ec-inline-input-field-loading
         v-if="isLoading"
         :value="valueForLoading"
       />
+
       <ec-inline-input-field-edit
         v-else-if="isEditing"
         v-model="value"
@@ -16,6 +18,7 @@
         @cancel="cancel"
         @submit="submit"
       />
+
       <ec-inline-input-field-value-text
         ref="valueText"
         v-else
@@ -23,6 +26,12 @@
         @edit="edit"
       />
     </template>
+
+    <ec-inline-input-field-copy
+      v-else-if="isCopyingAllowed"
+      :value="value"
+    />
+
     <div
       v-else
       class="ec-inline-input-field__slot"
@@ -33,6 +42,7 @@
 </template>
 
 <script>
+import EcInlineInputFieldCopy from './components/copy';
 import EcInlineInputFieldEdit from './components/edit';
 import EcInlineInputFieldLoading from './components/loading';
 import EcInlineInputFieldValueText from './components/value-text';
@@ -40,6 +50,7 @@ import EcInlineInputFieldValueText from './components/value-text';
 export default {
   name: 'EcInlineInputField',
   components: {
+    EcInlineInputFieldCopy,
     EcInlineInputFieldEdit,
     EcInlineInputFieldLoading,
     EcInlineInputFieldValueText,
@@ -50,6 +61,10 @@ export default {
       type: String,
     },
     isEditable: {
+      type: Boolean,
+      default: false,
+    },
+    isCopiable: {
       type: Boolean,
       default: false,
     },
@@ -70,6 +85,11 @@ export default {
     return {
       valueForLoading: this.value,
     };
+  },
+  computed: {
+    isCopyingAllowed() {
+      return this.isCopiable && !this.isEditable;
+    },
   },
   methods: {
     cancel() {
